@@ -1,0 +1,1 @@
+create table public.ideas (idea_id serial primary key, user_id integer not null, idea_name varchar(10), description text, created_at timestamp with time zone default current_timestamp, foreign key (user_id) references users(user_id));

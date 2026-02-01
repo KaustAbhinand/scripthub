@@ -1,0 +1,1 @@
+create table public.drafts (draft_id serial primary key, idea_id integer not null, commit_message text, file_type text, file_name text, file_path text, submitted_at timestamp with time zone default current_timestamp, foreign key (idea_id) references ideas(idea_id));
