@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Draft</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+    body {
+        background-color: #d6e8f5;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+    }
+
+    .container {
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .back-link {
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: #1a1a8c;
+        text-decoration: underline;
+        cursor: pointer;
+        margin-bottom: 28px;
+        display: inline-block;
+    }
+
+    .back-link:hover {
+        color: #0000cc;
+    }
+
+    h1 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #1a1a1a;
+        margin: 0 0 28px 0;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: bold;
+        color: #1a1a1a;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        border: 1px solid #aac5d9;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #1a1a1a;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #5a8aa8;
+    }
+
+    input[type="text"].invalid,
+    textarea.invalid {
+        border-color: #b00;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .field-error {
+        font-size: 12px;
+        color: #b00;
+        margin-top: 4px;
+        display: none;
+    }
+
+    .create-btn-row {
+        margin-top: 50px;
+        text-align: center;
+    }
+
+    .create-btn {
+        padding: 8px 28px;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        background-color: #1a1a8c;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .create-btn:hover:not(:disabled) {
+        background-color: #14148a;
+    }
+
+    .create-btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    .submit-error {
+        font-size: 13px;
+        color: #b00;
+        text-align: center;
+        margin-top: 12px;
+        display: none;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 60px;
+        font-size: 12px;
+        color: #666;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <button class="back-link">
+        &larr; Back
+    </button>
+
+    <h1>New draft</h1>
+
+    <div class="form-group">
+        <label for="draft-title">
+            Title <span style="color:#b00">*</span>
+        </label>
+
+        <input
+            type="text"
+            id="draft-title"
+            placeholder="e.g. Opening Scene"
+        >
+
+        <p class="field-error">
+            Title is required.
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label for="draft-description">
+            Description
+        </label>
+
+        <textarea
+            id="draft-description"
+            placeholder="Describe what this draft contains (optional)"
+        ></textarea>
+    </div>
+
+    
+
+    <div class="create-btn-row">
+        <button class="create-btn">
+            Create Draft
+        </button>
+    </div>
+
+    <p class="submit-error"></p>
+
+</div>
+
+<div class="footer">
+    &copy; ScriptHub
+</div>
+
+<script src="draft_creation.js"></script>
+
+</body>
+</html>

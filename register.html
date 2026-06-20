@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ScriptHub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #d6e8f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            padding-top: 40px;
+            color: #1a1a1a;
+        }
+        .form-container {
+            width: 280px;
+            margin: 30px auto 60px auto;
+            text-align: center;
+        }
+        .field {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+        .field label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 3px;
+            color: #1a1a1a;
+        }
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+        .field textarea {
+            height: 75px;
+            resize: vertical;
+        }
+        .err {
+            color: red;
+            font-size: 12px;
+            margin-top: 3px;
+            display: none;
+        }
+        .submit-err {
+            color: red;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        .submit-ok {
+            color: green;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        button {
+            width: 100%;
+            padding: 6px;
+            margin-top: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .login-link {
+            margin-top: 14px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Create your ScriptHub account</h1>
+
+    <div class="form-container">
+
+        <div class="field">
+            <label>Email <span style="color:red">*</span></label>
+            <input type="text" id="email" placeholder="name@example.com" />
+            <div class="err" id="email-err"></div>
+        </div>
+
+        <div class="field">
+            <label>Username <span style="color:red">*</span></label>
+            <input type="text" id="username" placeholder="Username" />
+            <div class="err" id="username-err"></div>
+        </div>
+
+        <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Full Name" />
+        </div>
+
+        <div class="field">
+            <label>Password <span style="color:red">*</span></label>
+            <input type="password" id="password" placeholder="Password" />
+            <div class="err" id="password-err"></div>
+        </div>
+
+        <div class="field">
+            <label>Bio <span style="color: #888; font-size: 12px;">(optional)</span></label>
+            <textarea id="bio" placeholder="Tell us a little about yourself..."></textarea>
+        </div>
+
+        <button id="registerBtn" onclick="handleSubmit()">Register</button>
+        <div class="submit-err" id="submit-err"></div>
+        <div class="submit-ok"  id="submit-ok"></div>
+
+        <p class="login-link">Already have an account? <a href="index.html">Login here</a></p>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL      = 'https://zvhdyptgwkdugldwuuqv.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aGR5cHRnd2tkdWdsZHd1dXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDQwNDMsImV4cCI6MjA5NjgyMDA0M30.MMitZCEYLlX0cMEpDVgyjBG4CFXAOAgbN47s3gRONvU';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const fields = {
+            email:    document.getElementById('email'),
+            username: document.getElementById('username'),
+            password: document.getElementById('password'),
+        };
+
+        function validateEmail(val) {
+            if (!val) return 'Email is required.';
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return 'Please enter a valid email (name@example.com).';
+            return '';
+        }
+        function validateUsername(val) {
+            if (!val) return 'Username is required.';
+            if (val.length < 3) return 'Username must be at least 3 characters.';
+            return '';
+        }
+        function validatePassword(val) {
+            if (!val) return 'Password is required.';
+            if (val.length < 6) return 'At least 6 characters required.';
+            if (!/[A-Z]/.test(val)) return 'At least 1 uppercase letter required.';
+            if (!/[a-z]/.test(val)) return 'At least 1 lowercase letter required.';
+            if (!/[^a-zA-Z0-9]/.test(val)) return 'At least 1 special character required.';
+            return '';
+        }
+        function showErr(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.style.display = msg ? 'block' : 'none';
+        }
+
+        fields.email.addEventListener('input',    () => showErr('email-err',    validateEmail(fields.email.value.trim())));
+        fields.username.addEventListener('input', () => showErr('username-err', validateUsername(fields.username.value.trim())));
+        fields.password.addEventListener('input', () => showErr('password-err', validatePassword(fields.password.value)));
+
+        async function handleSubmit() {
+            const btn       = document.getElementById('registerBtn');
+            const submitErr = document.getElementById('submit-err');
+            const submitOk  = document.getElementById('submit-ok');
+
+            const email    = fields.email.value.trim();
+            const username = fields.username.value.trim();
+            const password = fields.password.value;
+            const name     = document.getElementById('name').value.trim();
+            const bio      = document.getElementById('bio').value.trim();
+
+            const emailMsg    = validateEmail(email);
+            const usernameMsg = validateUsername(username);
+            const passwordMsg = validatePassword(password);
+
+            showErr('email-err',    emailMsg);
+            showErr('username-err', usernameMsg);
+            showErr('password-err', passwordMsg);
+
+            if (emailMsg || usernameMsg || passwordMsg) {
+                const problems = [];
+                if (emailMsg)    problems.push('email');
+                if (usernameMsg) problems.push('username');
+                if (passwordMsg) problems.push('password');
+                submitErr.textContent = 'Please fix the following: ' + problems.join(', ') + '.';
+                submitErr.style.display = 'block';
+                submitOk.style.display  = 'none';
+                return;
+            }
+
+            // disable button while working
+            btn.disabled    = true;
+            btn.textContent = 'Registering...';
+            submitErr.style.display = 'none';
+            submitOk.style.display  = 'none';
+
+            // step 1 — sign up
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+
+            if (authError) {
+                console.error('Sign up error:', authError);
+                submitErr.textContent   = authError.message;
+                submitErr.style.display = 'block';
+                btn.disabled    = false;
+                btn.textContent = 'Register';
+                return;
+            }
+
+            console.log('Sign up successful:', authData.user);
+            const user = authData.user;
+            
+            // step 2 — insert into profiles
+            const { error: profileError } = await supabaseClient.from('profiles').insert({
+                id:       user.id,
+                email:    email,
+                username: username,
+                name:     name || null,
+                bio:      bio  || null,
+            });
+
+            if (profileError) {
+                console.error('Profile error:', profileError);
+                submitErr.textContent   = 'Account created but profile save failed: ' + profileError.message;
+                submitErr.style.display = 'block';
+                btn.disabled    = false;
+                btn.textContent = 'Register';
+                return;
+            }
+
+            // step 3 — redirect to verify
+            console.log('Profile created successfully!');
+            localStorage.setItem('pending_email', email);
+            submitOk.textContent   = 'Account created! Check your email for the OTP...';
+            submitOk.style.display = 'block';
+            setTimeout(() => window.location.href = 'verify.html', 1500);
+        }
+    </script>
+
+</body>
+</html>

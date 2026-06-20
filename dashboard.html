@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ScriptHub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #d6e8f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 30px;
+        }
+        .logout-btn {
+            padding: 5px 14px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 36px;
+        }
+        
+        .profile-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+            color: #1a1a1a;
+        }
+        .profile-username {
+            font-size: 14px;
+            color: #444;
+            margin: 4px 0 0 0;
+        }
+        .ideas-section {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .ideas-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .ideas-header span {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .create-btn {
+            padding: 5px 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .ideas-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .ideas-list li {
+            margin-bottom: 10px;
+        }
+        .ideas-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+        .ideas-table th {
+    text-align: left;
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid #aac5d9;
+}
+        .ideas-table td {
+    padding: 10px 10px 10px 0;
+    font-size: 14px;
+    color: #1a1a1a;
+    border-bottom: 1px solid #d0e3f0;
+    vertical-align: top;
+}
+        .ideas-table td a {
+    color: #1a1a8c;
+    text-decoration: underline;
+}
+        .ideas-table td a:hover { color: #0000cc; }
+        .ideas-table td.genre    { color: #555; font-size: 13px; }
+        .ideas-table td.desc     { color: #555; font-size: 13px; max-width: 200px; }
+
+        .no-ideas {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 12px;
+            color: #666;
+        }
+
+    
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <div class="profile-section">
+        <div class="profile-pic" id="profile-pic">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+        </div>
+        <p class="profile-name"     id="profile-name">...</p>
+        <p class="profile-username" id="profile-username">...</p>
+    </div>
+
+    <div class="ideas-section">
+        <div class="ideas-header">
+            <span>Ideas</span>
+            <button class="create-btn" onclick="window.location.href='idea_creation.html'">Create idea</button>
+        </div>
+        <table class="ideas-table" id="ideas-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="ideas-tbody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">&copy; ScriptHub</div>
+
+    <script>
+        const SUPABASE_URL      = 'https://zvhdyptgwkdugldwuuqv.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aGR5cHRnd2tkdWdsZHd1dXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDQwNDMsImV4cCI6MjA5NjgyMDA0M30.MMitZCEYLlX0cMEpDVgyjBG4CFXAOAgbN47s3gRONvU';
+        const supabaseClient    = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function init() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error || !profile) {
+                console.error('Profile fetch error:', error);
+                return;
+            }
+
+            document.getElementById('profile-name').textContent     = profile.name || profile.username;
+            document.getElementById('profile-username').textContent = '@' + profile.username;
+
+
+            loadIdeas(user.id);
+        }
+
+        async function loadIdeas(userId) {
+            const { data: ideas, error } = await supabaseClient
+                .from('ideas')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
+
+            const tbody = document.getElementById('ideas-tbody');
+
+            if (!ideas || ideas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">No ideas yet. Create your first one!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            ideas.forEach(idea => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><a href="idea.html?id=${idea.id}">${idea.name}</a></td>
+                    <td class="genre">${idea.genre || 'N/A'}</td>
+                    <td class="desc">${idea.description || 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        init();
+    </script>
+
+</body>
+</html>

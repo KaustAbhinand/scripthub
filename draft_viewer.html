@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Version Viewer - ScriptHub</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+
+    <style>
+        body {
+            background: #d6e8f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #viewer {
+            background: white;
+            border: 1px solid #aac5d9;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            font-family: Consolas, monospace;
+        }
+
+        .delete-draft-btn {
+            background: none;
+            border: none;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #888;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            display: block;
+            margin: 30px auto 0 auto;
+        }
+        
+        .delete-draft-btn:hover { color: #b00; }
+
+        /* ── Delete popup ── */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .popup-box {
+            background: #fff;
+            border-radius: 6px;
+            padding: 28px 28px 22px 28px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+    }
+
+        .popup-box p {
+            font-size: 14px;
+            color: #1a1a1a;
+            margin: 0 0 22px 0;
+            line-height: 1.6;
+        }
+
+        .popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+    }
+
+        .popup-yes {
+            padding: 7px 22px;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            background-color: #b00;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+    }   
+        .popup-yes:hover { background-color: #900; }
+
+        .popup-no {
+            padding: 7px 22px;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            background: none;
+            border: 1px solid #aac5d9;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #1a1a1a;
+    }
+        .popup-no:hover { background-color: #edf5fb; }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 12px;
+            color: #666;
+        }
+
+</style>
+
+</head>
+
+<body>
+
+    <button id="back-btn">
+        ← Back
+    </button>
+
+    <h2 id="draft-title">Loading...</h2>
+
+    <div id="viewer">
+        Loading...
+    </div>
+
+    <div class="popup-overlay" id="delete-draft-popup" style="display:none">
+    <div class="popup-box">
+        <p>Are you sure you want to delete this file?<br>This is permanent.</p>
+        <div class="popup-actions">
+            <button class="popup-yes" onclick="deleteDraft()">Yes, delete</button>
+            <button class="popup-no"  onclick="closeDeleteDraftPopup()">No</button>
+        </div>
+    </div>
+</div>
+
+
+    <script src="draft_viewer.js"></script>
+
+    <button class="delete-draft-btn" onclick="confirmDeleteDraft()">Delete file</button>
+
+    <script src="delete_draft.js"></script>
+
+</body>
+</html>
