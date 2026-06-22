@@ -107,6 +107,81 @@
             color: #666;
         }
 
+        .delete-account-section {
+            text-align: center;
+            margin-top: 48px;
+        }
+
+        .delete-account-btn {
+            padding: 6px 16px;
+            font-size: 13px;
+            color: #cc0000;
+            background: transparent;
+            border: 1px solid #cc0000;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-account-btn:hover {
+            background-color: #fff0f0;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-box {
+            background: #fff;
+            border-radius: 8px;
+            padding: 28px 32px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .popup-box p {
+            font-size: 15px;
+            color: #1a1a1a;
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+
+        .popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .popup-actions button {
+            padding: 7px 22px;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            background-color: #cc0000;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-confirm:hover { background-color: #aa0000; }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid #aaa;
+            color: #333;
+        }
+
+        .btn-cancel:hover { background-color: #f5f5f5; }
+
     
     </style>
 </head>
@@ -145,7 +220,22 @@
         </table>
     </div>
 
+    <div class="delete-account-section">
+        <button class="delete-account-btn" onclick="confirmDeleteUser()">Delete account</button>
+    </div>
+
     <div class="footer">&copy; ScriptHub</div>
+
+    <!-- Delete account confirmation popup -->
+    <div class="popup-overlay" id="delete-user-popup">
+        <div class="popup-box">
+            <p>Are you sure you want to remove your profile?<br>This is permanent.</p>
+            <div class="popup-actions">
+                <button class="btn-confirm" onclick="deleteUser()">Yes</button>
+                <button class="btn-cancel"  onclick="closeDeleteUserPopup()">No</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const SUPABASE_URL      = 'https://zvhdyptgwkdugldwuuqv.supabase.co';
@@ -211,6 +301,8 @@
 
         init();
     </script>
+
+    <script src="delete_user.js"></script>
 
 </body>
 </html>
