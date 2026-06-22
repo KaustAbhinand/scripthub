@@ -205,7 +205,7 @@
     <div class="ideas-section">
         <div class="ideas-header">
             <span>Ideas</span>
-            <button class="create-btn" onclick="window.location.href='idea_creation.html'">Create idea</button>
+            <button class="create-btn" onclick="window.location.href='../idea-management/idea_creation.html'">Create idea</button>
         </div>
         <table class="ideas-table" id="ideas-table">
             <thead>
@@ -286,7 +286,7 @@
             ideas.forEach(idea => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><a href="idea.html?id=${idea.id}">${idea.name}</a></td>
+                    <td><a href="../idea-management/idea.html?id=${idea.id}">${idea.name}</a></td>
                     <td class="genre">${idea.genre || 'N/A'}</td>
                     <td class="desc">${idea.description || 'N/A'}</td>
                 `;

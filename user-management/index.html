@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptHub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #d6e8f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            padding-top: 40px;
+            color: #1a1a1a;
+        }
+        h2 {
+            text-align: center;
+            color: #1a1a1a;
+        }
+        .err {
+            color: red;
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to ScriptHub! Your script workspace</h1>
+    <h2>Login or sign up if you don't have an account :)</h2>
+
+    <div style="width: 220px; margin: 60px auto; text-align: center;">
+        <input type="text" id="identifier" placeholder="Username or Email"
+            style="width: 100%; padding: 5px; margin-bottom: 10px; box-sizing: border-box;" /><br>
+        <input type="password" id="password" placeholder="Password"
+            style="width: 100%; padding: 5px; margin-bottom: 10px; box-sizing: border-box;" /><br>
+        <button id="loginBtn" onclick="handleLogin()" style="width: 100%; padding: 5px;">Login</button>
+        <div class="err" id="login-err"></div>
+
+        <p style="margin-top: 14px; font-size: 13px;">
+            Don't have an account? <a href="register.html">Register here</a>
+        </p>
+    </div>
+
+    <script>
+        const SUPABASE_URL      = 'https://zvhdyptgwkdugldwuuqv.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aGR5cHRnd2tkdWdsZHd1dXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDQwNDMsImV4cCI6MjA5NjgyMDA0M30.MMitZCEYLlX0cMEpDVgyjBG4CFXAOAgbN47s3gRONvU';
+        const supabaseClient    = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function handleLogin() {
+            const btn        = document.getElementById('loginBtn');
+            const identifier = document.getElementById('identifier').value.trim();
+            const password   = document.getElementById('password').value;
+            const loginErr   = document.getElementById('login-err');
+
+            if (!identifier || !password) {
+                loginErr.textContent    = 'Please enter your email/username and password.';
+                loginErr.style.display  = 'block';
+                return;
+            }
+
+            btn.disabled    = true;
+            btn.textContent = 'Logging in...';
+            loginErr.style.display = 'none';
+
+            let email = identifier;
+
+            // if not an email, look up by username
+            if (!identifier.includes('@')) {
+                const { data: profile, error: lookupError } = await supabaseClient
+                    .from('profiles')
+                    .select('email')
+                    .eq('username', identifier)
+                    .single();
+
+                if (lookupError || !profile) {
+                    loginErr.textContent   = 'No account found with that username.';
+                    loginErr.style.display = 'block';
+                    btn.disabled    = false;
+                    btn.textContent = 'Login';
+                    return;
+                }
+
+                email = profile.email;
+            }
+
+            // sign in with email + password
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                loginErr.textContent   = error.message;
+                loginErr.style.display = 'block';
+                btn.disabled    = false;
+                btn.textContent = 'Login';
+                return;
+            }
+
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+
+</body>
+</html>

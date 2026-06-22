@@ -52,14 +52,14 @@ async function init() { // Initialisation of the page
         await supabaseClient.auth.getSession();
 
     if (!session) {
-        window.location.href = 'index.html';
+        window.location.href = '../user-management/index.html';
         return;
     }
 
     const ideaId = getIdeaId();
 
     if (!ideaId) {
-        window.location.href = 'dashboard.html';
+        window.location.href = '../user-management/dashboard.html';
         return;
     }
 
@@ -77,7 +77,7 @@ async function loadIdea(ideaId) { // Load the idea
             .single();
 
     if (error || !idea) {
-        window.location.href = 'dashboard.html';
+        window.location.href = '../user-management/dashboard.html';
         return;
     }
 
@@ -171,7 +171,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
 
                 <button
                 class="delete-draft-btn"
-                onclick="event.stopPropagation(); deleteDraftConfirm('${draft.id}')">
+                onclick="event.stopPropagation(); confirmDeleteDraft('${draft.id}')">
                 Delete Draft
             </button>
 
@@ -241,7 +241,7 @@ async function toggleVersions(draftId) { // Load the versions of a draft from th
                 'version-item';
 
             link.href =
-                `draft_viewer.html?versionId=${version.id}`;
+                `../draft-management/draft_viewer.html?versionId=${version.id}`;
 
             link.textContent =
                 `v${version.version} - ${version.commit_message}`;
@@ -258,7 +258,7 @@ function handleUpload() { // handle the upload version button click
     const ideaId = getIdeaId();
 
     window.location.href =
-        `draft_creation.html?ideaId=${ideaId}`;
+        `../draft-management/draft_creation.html?ideaId=${ideaId}`;
 }
 
 function uploadVersion(draftId) { // handle the upload version button click
@@ -266,7 +266,7 @@ function uploadVersion(draftId) { // handle the upload version button click
     const ideaId = getIdeaId();
 
     window.location.href =
-        `draft_submission.html?draftId=${draftId}&ideaId=${ideaId}`;
+        `../draft-management/draft_submission.html?draftId=${draftId}&ideaId=${ideaId}`;
 }
 
 init();

@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Open index.html",
-            "file": "c:\\Users\\RAGUNATH\\Desktop\\scripthub\\index.html"
+            "file": "c:\\Users\\RAGUNATH\\Desktop\\scripthub\\user-management\\index.html"
         }
     ]
 }

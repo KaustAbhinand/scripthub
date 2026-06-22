@@ -22,7 +22,7 @@ function countWords(text) {
 async function init() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
-        window.location.href = 'index.html';
+        window.location.href = '../user-management/index.html';
         return;
     }
     currentUser = session.user;
@@ -30,12 +30,12 @@ async function init() {
     ideaId = getParam('ideaId');
     draftId = getParam('draftId');
     if (!ideaId || !draftId) {
-        window.location.href = 'dashboard.html';
+        window.location.href = '../user-management/dashboard.html';
         return;
     }
 
     document.getElementById('back-link').onclick =
-        () => window.location.href = `idea.html?id=${ideaId}`;
+        () => window.location.href = `../idea-management/idea.html?id=${ideaId}`;
 }
 
 /* ── File input ── */
@@ -167,7 +167,7 @@ async function handleSubmit() {
         });
 
         if (insertError) throw insertError;
-        window.location.href = `idea.html?id=${ideaId}`;
+        window.location.href = `../idea-management/idea.html?id=${ideaId}`;
 
     } catch (err) {
         console.error(err);

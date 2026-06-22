@@ -27,6 +27,18 @@ async function deleteDraft() {
         return;
     }
 
+    const { data: draft, error: draftError } = await supabaseClient
+        .from('drafts')
+        .select('idea_id')
+        .eq('id', version.draft_id)
+        .single();
+
+    if (draftError || !draft) {
+        closeDeleteDraftPopup();
+        alert('Something went wrong. Please try again.');
+        return;
+    }
+
     // Remove the file from the storage bucket
     const { error: storageError } = await supabaseClient
         .storage
@@ -51,7 +63,7 @@ async function deleteDraft() {
         return;
     }
 
-    window.location.href = `idea.html?id=${version.idea_id}`;
+    window.location.href = `../idea-management/idea.html?id=${draft.idea_id}`;
 }
 
 // Close popup if user clicks outside the box

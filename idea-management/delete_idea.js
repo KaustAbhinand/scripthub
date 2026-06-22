@@ -25,7 +25,7 @@ async function deleteIdea() {
     }
 
     // Drafts are cleaned up automatically via ON DELETE CASCADE
-    window.location.href = 'dashboard.html';
+    window.location.href = '../user-management/dashboard.html';
 }
 
 // Close popup if user clicks outside the box

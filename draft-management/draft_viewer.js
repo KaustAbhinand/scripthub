@@ -18,7 +18,7 @@ async function init() {
 
      const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
-        window.location.href = 'index.html';
+        window.location.href = '../user-management/index.html';
         return;
     }
 
@@ -58,7 +58,7 @@ async function init() {
     document.getElementById("back-btn")
     .onclick = () =>
         window.location.href =
-            `idea.html?id=${ideaId}`;
+            `../idea-management/idea.html?id=${draft.idea_id}`;
 
 
     await displayVersion(version);

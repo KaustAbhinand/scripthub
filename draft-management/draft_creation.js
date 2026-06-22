@@ -16,7 +16,7 @@ async function init() {
     } = await supabaseClient.auth.getUser();
 
     if (!user) {
-        window.location.href = 'index.html';
+        window.location.href = '../user-management/index.html';
         return;
     }
 
@@ -87,7 +87,7 @@ async function handleCreateDraft() {
     }
 
     window.location.href =
-        `idea.html?id=${ideaId}`;
+        `../idea-management/idea.html?id=${ideaId}`;
 }
 
 init();
