@@ -191,8 +191,19 @@
             submitErr.style.display = 'none';
             submitOk.style.display  = 'none';
 
-            // step 1 — sign up
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+            // step 1 — sign up (profile created automatically via DB trigger)
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                    data: {
+                        username: username,
+                        name:     name  || null,
+                        bio:      bio   || null,
+                        email:    email,
+                    }
+            }
+    });
 
             if (authError) {
                 console.error('Sign up error:', authError);
@@ -201,28 +212,17 @@
                 btn.disabled    = false;
                 btn.textContent = 'Register';
                 return;
-            }
+        }
 
             console.log('Sign up successful:', authData.user);
-            const user = authData.user;
-            
-            // step 2 — insert into profiles
-            const { error: profileError } = await supabaseClient.from('profiles').insert({
-                id:       user.id,
-                email:    email,
-                username: username,
-                name:     name || null,
-                bio:      bio  || null,
-            });
 
-            if (profileError) {
-                console.error('Profile error:', profileError);
-                submitErr.textContent   = 'Account created but profile save failed: ' + profileError.message;
-                submitErr.style.display = 'block';
-                btn.disabled    = false;
-                btn.textContent = 'Register';
-                return;
-            }
+            // step 2 — redirect to verify  
+            console.log('Profile will be created by DB trigger');
+            localStorage.setItem('pending_email', email);
+            submitOk.textContent   = 'Account created! Check your email for the OTP...';
+            submitOk.style.display = 'block';
+            setTimeout(() => window.location.href = 'verify.html', 1500);
+            
 
             // step 3 — redirect to verify
             console.log('Profile created successfully!');
