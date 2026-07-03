@@ -71,11 +71,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .drafts-header span {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: #1a1a1a;
         }
@@ -87,61 +87,65 @@
             cursor: pointer;
         }
 
-        .draft-list {
+        /* ── Drafts table (mirrors dashboard's ideas-table) ── */
+        .drafts-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        /* Column header row */
-        .draft-list-header {
-            display: grid;
-            grid-template-columns: 180px 1fr 110px 220px;
-            padding: 6px 4px;
-            border-bottom: 2px solid #aac5d9;
+        .drafts-table th {
+            text-align: left;
             font-size: 12px;
             font-weight: bold;
             color: #555;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-        }
-
-        .draft-list-header .col-actions {
-            text-align: right;
-        }
-
-        .draft-wrapper {
+            padding: 0 10px 8px 0;
             border-bottom: 1px solid #aac5d9;
         }
 
-       @media (max-width: 600px) {
-    .draft-list-header {
-        display: none;
-    }
+        .drafts-table th.col-actions {
+            text-align: right;
+        }
 
-    .draft-item {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-        padding: 10px 8px;
-    }
+        .draft-row {
+            cursor: pointer;
+        }
 
-    .draft-description {
-        padding-right: 0;
-    }
+        .draft-row td {
+            padding: 12px 10px 12px 0;
+            font-size: 14px;
+            color: #1a1a1a;
+            border-bottom: 1px solid #d0e3f0;
+            vertical-align: top;
+        }
 
-    .draft-actions {
-        width: 100%;
-        justify-content: flex-start;
-        margin-top: 4px;
-    }
-}
+        .draft-row:hover {
+            background-color: rgba(255,255,255,0.25);
+        }
+
+        .draft-row td.desc {
+            color: #555;
+            font-size: 13px;
+            max-width: 200px;
+        }
+
+        .draft-row td.date {
+            color: #555;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .draft-row td.col-actions {
+            text-align: right;
+            white-space: nowrap;
+        }
 
         .upload-version-btn {
             padding: 4px 10px;
             font-size: 12px;
             font-family: Arial, sans-serif;
             cursor: pointer;
-            justify-self: end;
             margin-right: 8px;
         }
 
@@ -154,22 +158,26 @@
             border: 1px solid #d99;
             color: #b00;
             border-radius: 4px;
-            justify-self: end;
         }
 
         .delete-draft-btn:hover {
             background: #ffecec;
         }
 
+        .versions-row td {
+            padding: 0;
+            border-bottom: 1px solid #d0e3f0;
+        }
+
         .versions-container {
             display: none;
-            padding-left: 28px;
-            background-color: rgba(255,255,255,0.15);
+            padding: 6px 10px 10px 20px;
+            background-color: rgba(255,255,255,0.35);
         }
 
         .version-item {
             display: block;
-            padding: 8px 0;
+            padding: 6px 0;
             color: #1a1a8c;
             text-decoration: none;
             font-size: 13px;
@@ -191,6 +199,36 @@
             color: #555;
             text-align: center;
             padding: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .drafts-table thead {
+                display: none;
+            }
+
+            .drafts-table, .drafts-table tbody, .draft-row, .draft-row td {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .draft-row {
+                padding: 10px 8px;
+            }
+
+            .draft-row td {
+                border-bottom: none;
+                padding: 2px 0;
+            }
+
+            .draft-row td.col-actions {
+                text-align: left;
+                margin-top: 6px;
+            }
+
+            .versions-row, .versions-row td {
+                display: block;
+            }
         }
 
         .idea-footer {
@@ -310,17 +348,19 @@
             </button>
         </div>
 
-        <!-- Column headers -->
-        <div class="draft-list-header">
-            <span>Title</span>
-            <span>Description</span>
-            <span>Uploaded</span>
-            <span class="col-actions">Actions</span>
-        </div>
-
-        <div class="draft-list" id="draft-list">
-            <p class="loading">Loading...</p>
-        </div>
+        <table class="drafts-table" id="drafts-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Uploaded</th>
+                    <th class="col-actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="draft-list">
+                <tr><td colspan="4" class="loading">Loading...</td></tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="idea-footer">
