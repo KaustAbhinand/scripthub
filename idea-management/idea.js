@@ -140,29 +140,61 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
 
     drafts.forEach(draft => {
 
-        // Main row — title, description, date, actions
-        const row =
-            document.createElement('tr');
+      const wrapper =
+            document.createElement('div');
 
-        row.className = 'draft-row';
+        wrapper.className =
+            'draft-wrapper';
 
-        row.innerHTML = `
-            <td class="title">${draft.title}</td>
-            <td class="desc">${draft.description || ''}</td>
-            <td class="date">${formatDate(draft.created_at)}</td>
-            <td class="col-actions">
+        const safeTitle = DOMPurify.sanitize(draft.title);
+        const safeDescription = DOMPurify.sanitize(draft.description || '');
+        // Sanitizing the title and desc to prevent XSS injection.
+        wrapper.innerHTML = `
+            <div class="draft-item">
+
+                <span class="draft-name">
+                    ${safeTitle}
+                </span>
+
+                <span class="draft-description">
+                    ${safeDescription}
+                </span>
+
+                <span class="draft-date">
+                    ${formatDate(draft.created_at)}
+                </span>
+
+                <div class="draft-actions">
+
                 <button
-                    class="upload-version-btn"
-                    onclick="event.stopPropagation(); uploadVersion('${draft.id}')">
-                    Upload Version
+                class="upload-version-btn"
+                onclick="event.stopPropagation(); uploadVersion('${draft.id}')">
+                Upload Version
                 </button>
+
                 <button
-                    class="delete-draft-btn"
-                    onclick="event.stopPropagation(); confirmDeleteDraft('${draft.id}')">
-                    Delete Draft
-                </button>
-            </td>
+                class="delete-draft-btn"
+                onclick="event.stopPropagation(); confirmDeleteDraft('${draft.id}')">
+                Delete Draft
+            </button>
+
+            </div>
+
+            </div>
+
+            <div
+                class="versions-container"
+                id="versions-${draft.id}">
+            </div>
         `;
+
+        wrapper.querySelector('.draft-item')
+            .addEventListener('click', () => {
+                toggleVersions(draft.id);
+            });
+
+        listEl.appendChild(wrapper);
+    });
 
         row.addEventListener('click', () => {
             toggleVersions(draft.id);
@@ -182,8 +214,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
 
         listEl.appendChild(row);
         listEl.appendChild(versionsRow);
-    });
-}
+    }
 
 async function toggleVersions(draftId) { // Load the versions of a draft from the versions table
 

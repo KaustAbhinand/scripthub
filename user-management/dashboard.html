@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - ScriptHub</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
     <style>
         body {
             background-color: #d6e8f5;
@@ -323,10 +324,13 @@
             tbody.innerHTML = '';
             ideas.forEach(idea => {
                 const row = document.createElement('tr');
+                const safeName = DOMPurify.sanitize(idea.name);
+                const safeGenre = DOMPurify.sanitize(idea.genre || 'N/A');
+                const safeDescription = DOMPurify.sanitize(idea.description || 'N/A');
                 row.innerHTML = `
-                    <td><a href="../idea-management/idea.html?id=${idea.id}">${idea.name}</a></td>
-                    <td class="genre">${idea.genre || 'N/A'}</td>
-                    <td class="desc">${idea.description || 'N/A'}</td>
+                    <td><a href="../idea-management/idea.html?id=${idea.id}">${safeName}</a></td>
+                    <td class="genre">${safeGenre}</td>
+                    <td class="desc">${safeDescription}</td>
                 `;
                 tbody.appendChild(row);
             });
