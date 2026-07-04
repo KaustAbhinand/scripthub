@@ -123,7 +123,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
         console.error(error);
 
         listEl.innerHTML =
-            '<p class="no-drafts">Failed to load drafts.</p>';
+            '<tr><td colspan="4" class="no-drafts">Failed to load drafts.</td></tr>';
 
         return;
     }
@@ -131,7 +131,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
     if (!drafts || drafts.length === 0) {
 
         listEl.innerHTML =
-            '<p class="no-drafts">No drafts yet. Create your first draft.</p>';
+            '<tr><td colspan="4" class="no-drafts">No drafts yet. Create your first draft.</td></tr>';
 
         return;
     }
@@ -140,61 +140,52 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
 
     drafts.forEach(draft => {
 
-        const wrapper =
-            document.createElement('div');
-
-        wrapper.className =
-            'draft-wrapper';
-
         const safeTitle = DOMPurify.sanitize(draft.title);
         const safeDescription = DOMPurify.sanitize(draft.description || '');
         // Sanitizing the title and desc to prevent XSS injection.
 
-        wrapper.innerHTML = `
-            <div class="draft-item">
+        // Main draft row
+        const row =
+            document.createElement('tr');
 
-                <span class="draft-name">
-                    ${safeTitle}
-                </span>
+        row.className = 'draft-row';
 
-                <span class="draft-description">
-                    ${safeDescription}
-                </span>
-
-                <span class="draft-date">
-                    ${formatDate(draft.created_at)}
-                </span>
-
-                <div class="draft-actions">
-
+        row.innerHTML = `
+            <td>${safeTitle}</td>
+            <td class="desc">${safeDescription}</td>
+            <td class="date">${formatDate(draft.created_at)}</td>
+            <td class="col-actions">
                 <button
-                class="upload-version-btn"
-                onclick="event.stopPropagation(); uploadVersion('${draft.id}')">
-                Upload Version
+                    class="upload-version-btn"
+                    onclick="event.stopPropagation(); uploadVersion('${draft.id}')">
+                    Upload Version
                 </button>
-
                 <button
-                class="delete-draft-btn"
-                onclick="event.stopPropagation(); confirmDeleteDraft('${draft.id}')">
-                Delete Draft
-            </button>
-
-            </div>
-
-            </div>
-
-            <div
-                class="versions-container"
-                id="versions-${draft.id}">
-            </div>
+                    class="delete-draft-btn"
+                    onclick="event.stopPropagation(); confirmDeleteDraft('${draft.id}')">
+                    Delete Draft
+                </button>
+            </td>
         `;
 
-        wrapper.querySelector('.draft-item')
-            .addEventListener('click', () => {
-                toggleVersions(draft.id);
-            });
+        row.addEventListener('click', () => {
+            toggleVersions(draft.id);
+        });
 
-        listEl.appendChild(wrapper);
+        // Versions row — hidden by default, spans all columns
+        const versionsRow =
+            document.createElement('tr');
+
+        versionsRow.className = 'versions-row';
+
+        versionsRow.innerHTML = `
+            <td colspan="4">
+                <div class="versions-container" id="versions-${draft.id}"></div>
+            </td>
+        `;
+
+        listEl.appendChild(row);
+        listEl.appendChild(versionsRow);
     });
 }
 
