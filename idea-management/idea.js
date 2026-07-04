@@ -123,7 +123,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
         console.error(error);
 
         listEl.innerHTML =
-            '<tr><td colspan="4" class="no-drafts">Failed to load drafts.</td></tr>';
+            '<p class="no-drafts">Failed to load drafts.</p>';
 
         return;
     }
@@ -131,7 +131,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
     if (!drafts || drafts.length === 0) {
 
         listEl.innerHTML =
-            '<tr><td colspan="4" class="no-drafts">No drafts yet. Create your first draft.</td></tr>';
+            '<p class="no-drafts">No drafts yet. Create your first draft.</p>';
 
         return;
     }
@@ -140,7 +140,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
 
     drafts.forEach(draft => {
 
-      const wrapper =
+        const wrapper =
             document.createElement('div');
 
         wrapper.className =
@@ -149,6 +149,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
         const safeTitle = DOMPurify.sanitize(draft.title);
         const safeDescription = DOMPurify.sanitize(draft.description || '');
         // Sanitizing the title and desc to prevent XSS injection.
+
         wrapper.innerHTML = `
             <div class="draft-item">
 
@@ -195,26 +196,7 @@ async function loadDrafts(ideaId) { // Load the drafts of an idea, from the draf
 
         listEl.appendChild(wrapper);
     });
-
-        row.addEventListener('click', () => {
-            toggleVersions(draft.id);
-        });
-
-        // Versions row — hidden by default, spans all columns
-        const versionsRow =
-            document.createElement('tr');
-
-        versionsRow.className = 'versions-row';
-
-        versionsRow.innerHTML = `
-            <td colspan="4">
-                <div class="versions-container" id="versions-${draft.id}"></div>
-            </td>
-        `;
-
-        listEl.appendChild(row);
-        listEl.appendChild(versionsRow);
-    }
+}
 
 async function toggleVersions(draftId) { // Load the versions of a draft from the versions table
 
