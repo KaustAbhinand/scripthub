@@ -1,9 +1,10 @@
-
 // All logic for draft_submission.html
 
 const SUPABASE_URL      = 'https://zvhdyptgwkdugldwuuqv.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2aGR5cHRnd2tkdWdsZHd1dXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDQwNDMsImV4cCI6MjA5NjgyMDA0M30.MMitZCEYLlX0cMEpDVgyjBG4CFXAOAgbN47s3gRONvU';
 const supabaseClient    = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB cap
 
 let currentUser = null;
 let ideaId      = null;
@@ -41,8 +42,20 @@ async function init() {
 /* ── File input ── */
 function onFileChosen() {
     const input = document.getElementById('file-input');
-    chosenFile  = input.files[0] || null;
-    document.getElementById('file-chosen').textContent =
+    const file  = input.files[0] || null;
+    const fileChosenEl = document.getElementById('file-chosen');
+
+    if (file && file.size > MAX_FILE_SIZE_BYTES) {
+        chosenFile = null;
+        input.value = '';
+        fileChosenEl.textContent = `File too large (max 2MB). "${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)}MB.`;
+        fileChosenEl.style.color = '#b00';
+        return;
+    }
+
+    chosenFile = file;
+    fileChosenEl.style.color = '';
+    fileChosenEl.textContent =
         chosenFile ? `Selected: ${chosenFile.name}` : '';
 
     if (chosenFile) {
@@ -89,6 +102,14 @@ async function handleSubmit() {
         return;
     }
 
+    // Defensive re-check in case chosenFile was set/mutated elsewhere
+    if (chosenFile && chosenFile.size > MAX_FILE_SIZE_BYTES) {
+        const errEl = document.getElementById('submit-error');
+        errEl.textContent   = 'File exceeds the 2MB limit. Please choose a smaller file.';
+        errEl.style.display = 'block';
+        return;
+    }
+
     const btn = document.getElementById('submit-btn');
     btn.disabled    = true;
     btn.textContent = 'Submitting...';
@@ -108,7 +129,12 @@ async function handleSubmit() {
                 .from('drafts')
                 .upload(storagePath, chosenFile);
 
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                if (uploadError.message?.toLowerCase().includes('size')) {
+                    throw new Error('File exceeds the 2MB limit.');
+                }
+                throw uploadError;
+            }
 
         } else {
             const blob  = new Blob([writtenText], { type: 'text/plain' });
@@ -172,7 +198,9 @@ async function handleSubmit() {
     } catch (err) {
         console.error(err);
         const errEl = document.getElementById('submit-error');
-        errEl.textContent   = 'Something went wrong. Please try again.';
+        errEl.textContent   = err.message?.includes('2MB limit')
+            ? err.message
+            : 'Something went wrong. Please try again.';
         errEl.style.display = 'block';
         btn.disabled    = false;
         btn.textContent = 'Upload file';
