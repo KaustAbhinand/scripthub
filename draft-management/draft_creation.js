@@ -9,6 +9,12 @@ const supabaseClient =
 
 let currentUser = null;
 
+function getIdeaId() {
+    return new URLSearchParams(
+        window.location.search
+    ).get('ideaId');
+}
+
 async function init() {
 
     const {
@@ -21,6 +27,13 @@ async function init() {
     }
 
     currentUser = user;
+
+    const ideaId = getIdeaId();
+
+    document.getElementById('back-link').onclick =
+        () => window.location.href = ideaId
+            ? `../idea-management/idea.html?id=${ideaId}`
+            : '../user-management/dashboard.html';
 
     document
         .querySelector('.create-btn')
